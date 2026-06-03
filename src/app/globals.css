@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-space-deep: #0b0e14;
+  --color-space-surface: #12161f;
+  --color-moonlight: #e8ecf4;
+  --color-cyber-cyan: #22d3ee;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background-color: var(--color-space-deep);
+  color: var(--color-moonlight);
+}
+
+.leaflet-container {
+  font-family: inherit;
+  z-index: 0;
+}
