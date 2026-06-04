@@ -25,16 +25,6 @@ const CustomMarkerDynamic = dynamic(
   { ssr: false }
 );
 
-const MapControlsDynamic = dynamic(
-  () => import('./MapControls').then((mod) => mod.MapControls),
-  { ssr: false }
-);
-
-const TooltipInfoDynamic = dynamic(
-  () => import('./TooltipInfo').then((mod) => mod.TooltipInfo),
-  { ssr: false }
-);
-
 export function MoonMap(props: MoonMapProps) {
   return <MoonMapDynamic {...props} />;
 }
@@ -43,17 +33,10 @@ export function CustomMarker(props: CustomMarkerProps) {
   return <CustomMarkerDynamic {...props} />;
 }
 
-export function MapControls(props: { onResetView?: () => void }) {
-  return <MapControlsDynamic {...props} />;
-}
-
-export function TooltipInfo(props: {
-  coordinate: { lat: number; lng: number } | null;
-  isVisible: boolean;
-  position?: { x: number; y: number } | null;
-}) {
-  return <TooltipInfoDynamic {...props} />;
-}
+// Re-export directly - no dynamic wrapper for components that use useMap()
+// They must be rendered inside MapContainer context
+export { MapControls } from './MapControls';
+export { TooltipInfo } from './TooltipInfo';
 
 export type { MoonMapProps } from './MoonMap';
 export type { CustomMarkerProps } from './CustomMarker';
