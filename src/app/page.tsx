@@ -44,7 +44,7 @@ class SidebarErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       return (
         this.props.fallback ?? (
           <div className="flex flex-col items-center justify-center gap-2 py-8 text-center">
-            <p className="text-sm text-red-400">Terjadi kesalahan</p>
+            <p className="text-sm text-red-400">An error occurred</p>
             <p className="font-mono text-xs text-moonlight-muted">
               {this.state.error?.message ?? 'Unknown error'}
             </p>
@@ -56,13 +56,27 @@ class SidebarErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   }
 }
 
+function MapLoadingPlaceholder() {
+  return (
+    <div
+      className="flex h-full min-h-[400px] w-full items-center justify-center bg-space-deep text-moonlight-muted"
+      role="status"
+      aria-label="Loading map"
+    >
+      <span className="font-mono text-sm">Initializing lunar map…</span>
+    </div>
+  );
+}
+
 function HomePageContent() {
+  const [isMounted, setIsMounted] = useState(false);
   const { coordinate, setCoordinate, sharedState, clearSharedState } = useMapSync();
   const [selectedDate, setSelectedDate] = useState(() => new Date());
   const [showExportModal, setShowExportModal] = useState(false);
   const [showHeatmap, setShowHeatmap] = useState(false);
   const [mapCenter, setMapCenter] = useState<GeoCoordinate>({ lat: -2.5, lng: 118 });
   const [mapZoom] = useState(5);
+  const [flyToTarget, setFlyToTarget] = useState<GeoCoordinate | null>(null);
 
   // Multi-pin state
   const {
@@ -77,6 +91,10 @@ function HomePageContent() {
   } = useMultiPin();
 
   const { moonData, isLoading, error } = useMoonData(coordinate, selectedDate);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Handle shared state from URL
   useEffect(() => {
@@ -98,6 +116,7 @@ function HomePageContent() {
     (payload: { coordinate: GeoCoordinate; timestamp: string }) => {
       setCoordinate(payload.coordinate);
       setMapCenter(payload.coordinate);
+      setFlyToTarget(null); // Clear flyTo when user clicks manually
 
       // Add pin if in multi-pin mode
       if (isMultiPinMode) {
@@ -115,6 +134,7 @@ function HomePageContent() {
     (coord: GeoCoordinate) => {
       setCoordinate(coord);
       setMapCenter(coord);
+      setFlyToTarget(coord); // Trigger flyTo animation
     },
     [setCoordinate]
   );
@@ -125,6 +145,7 @@ function HomePageContent() {
       const pin = pins.find((p) => p.id === id);
       if (pin) {
         setCoordinate(pin.coordinate);
+        setFlyToTarget(pin.coordinate);
       }
     },
     [selectPin, pins, setCoordinate]
@@ -139,20 +160,62 @@ function HomePageContent() {
     }
   }, [isMultiPinMode, toggleMultiPinMode, coordinate, pins.length, addPin, selectedDate]);
 
+  if (!isMounted) {
+    return (
+      <main className="relative flex h-screen w-full overflow-hidden bg-space-deep">
+        <h1 className="sr-only">MoonPhase GIS - Lunar Phase Map</h1>
+        <section id="map-section" className="relative flex-1" aria-label="Interactive map">
+          <MapLoadingPlaceholder />
+        </section>
+        <section
+          id="sidebar-section"
+          className="pointer-events-auto absolute right-0 top-0 z-10 flex h-full w-full max-w-md flex-col p-4 sm:p-6"
+          aria-label="Astronomical data panel"
+        >
+          <PanelShell title="Astronomical Data">
+            <SkeletonSidebar />
+          </PanelShell>
+        </section>
+      </main>
+    );
+  }
+
   return (
     <main className="relative flex h-screen w-full overflow-hidden bg-space-deep">
       {/* Visually hidden heading for accessibility */}
-      <h1 className="sr-only">MoonPhase GIS - Peta Fase Bulan</h1>
+      <h1 className="sr-only">MoonPhase GIS - Lunar Phase Map</h1>
 
       {/* Map section */}
-      <section id="map-section" className="relative flex-1" aria-label="Peta interaktif" role="application">
+      <section id="map-section" className="relative flex-1" aria-label="Interactive map" role="application">
         <MoonMap
           className="absolute inset-0 h-full w-full"
           onMapClick={handleMapClick}
           initialCenter={coordinate ?? undefined}
-        />
+          flyTo={flyToTarget}
+        >
+          <HeatmapLayer
+            isVisible={showHeatmap}
+            center={coordinate ?? mapCenter}
+            date={selectedDate}
+          />
 
-        {/* Search bar - floating over map */}
+          {/* Markers must be MapContainer descendants (react-leaflet context) */}
+          {coordinate && moonData && !isMultiPinMode && (
+            <CustomMarker coordinate={coordinate} phase={moonData.phase} />
+          )}
+          {isMultiPinMode &&
+            pins.map((pin) => (
+              <CustomMarker
+                key={pin.id}
+                coordinate={pin.coordinate}
+                phase={pin.moonData?.phase ?? 'new_moon'}
+                color={pin.color}
+                label={pin.label}
+              />
+            ))}
+        </MoonMap>
+
+        {/* Search bar - floating over map (no longer uses useMap) */}
         <div id="search-section" className="absolute left-4 top-4 z-[1001]">
           <SearchBar onLocationSelect={handleLocationSelect} />
         </div>
@@ -191,7 +254,7 @@ function HomePageContent() {
         <div className="absolute right-4 top-4 z-[1000]">
           <button
             onClick={() => setShowExportModal(true)}
-            aria-label="Ekspor data bulan"
+            aria-label="Export moon data"
             className="flex items-center gap-2 rounded-lg border border-white/10 bg-space-surface/95 px-3 py-2 text-xs font-medium text-moonlight-muted backdrop-blur-md transition-all hover:border-white/20 hover:text-moonlight"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -202,48 +265,20 @@ function HomePageContent() {
                 d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
               />
             </svg>
-            Ekspor
+            Export
           </button>
         </div>
 
-        {/* Heatmap layer */}
-        {coordinate && (
-          <HeatmapLayer
-            isVisible={showHeatmap}
-            center={coordinate}
-            date={selectedDate}
-          />
-        )}
-
-        {/* Main marker */}
-        {coordinate && moonData && !isMultiPinMode && (
-          <div className="absolute left-1/2 top-4 z-[1000] -translate-x-1/2">
-            <CustomMarker coordinate={coordinate} phase={moonData.phase} />
-          </div>
-        )}
-
-        {/* Multi-pin markers */}
-        {isMultiPinMode &&
-          pins.map((pin) => (
-            <div key={pin.id} className="absolute left-1/2 top-4 z-[1000] -translate-x-1/2">
-              <CustomMarker
-                coordinate={pin.coordinate}
-                phase={pin.moonData?.phase ?? 'new_moon'}
-                color={pin.color}
-                label={pin.label}
-              />
-            </div>
-          ))}
       </section>
 
       {/* Sidebar panel */}
       <section
         id="sidebar-section"
         className="pointer-events-auto absolute right-0 top-0 z-10 flex h-full w-full max-w-md flex-col p-4 sm:p-6"
-        aria-label="Panel data astronomi"
+        aria-label="Astronomical data panel"
         aria-live="polite"
       >
-        <PanelShell title="Data Astronomi">
+        <PanelShell title="Astronomical Data">
           <div className="panel-scroll flex flex-1 flex-col gap-4 overflow-y-auto">
             {/* Date selector at top */}
             <DateSelector date={selectedDate} onChange={handleDateChange} />

@@ -9,22 +9,18 @@ export interface TimelineProps {
 }
 
 /**
- * Format a Date to "HH:mm" in WIB (UTC+7).
+ * Format a Date to "HH:mm" in the user's locale.
  */
 function formatTimeShort(date: Date): string {
-  const wibTime = new Date(date.getTime() + 7 * 60 * 60 * 1000);
-  const hours = String(wibTime.getUTCHours()).padStart(2, '0');
-  const minutes = String(wibTime.getUTCMinutes()).padStart(2, '0');
-  return `${hours}:${minutes}`;
+  return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 }
 
 /**
- * Convert a Date to a 0-1 progress value within a 24-hour day (WIB).
+ * Convert a Date to a 0-1 progress value within a 24-hour day.
  */
 function dateToProgress(date: Date): number {
-  const wibTime = new Date(date.getTime() + 7 * 60 * 60 * 1000);
-  const hours = wibTime.getUTCHours();
-  const minutes = wibTime.getUTCMinutes();
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
   return (hours * 60 + minutes) / (24 * 60);
 }
 
@@ -67,11 +63,11 @@ export const Timeline = memo(function Timeline({ moonrise, moonset, now }: Timel
       {/* Header */}
       <div className="flex items-center justify-between">
         <span className="font-sans text-sm font-medium text-moonlight-muted">
-          Linimasa Bulan
+          Moon Timeline
         </span>
         {isMoonUp && (
           <span className="rounded-full bg-cyber-cyan/10 px-2 py-0.5 font-mono text-xs text-cyber-cyan">
-            Terlihat
+            Visible
           </span>
         )}
       </div>
@@ -184,7 +180,7 @@ export const Timeline = memo(function Timeline({ moonrise, moonset, now }: Timel
               }}
             >
               <span className="font-mono text-[10px] text-cyber-cyan/70">
-                ↑ puncak
+                ↑ peak
               </span>
             </div>
           )}

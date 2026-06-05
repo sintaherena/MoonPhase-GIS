@@ -43,7 +43,7 @@ export const metadata: Metadata = {
       },
     ],
     type: 'website',
-    locale: 'id_ID',
+    locale: 'en_US',
   },
   twitter: {
     card: 'summary_large_image',
@@ -90,7 +90,7 @@ export default function RootLayout({
       <body className="min-h-screen font-sans antialiased">
         {/* Skip to content link for keyboard navigation */}
         <a href="#main-content" className="skip-to-content">
-          Lewati ke konten utama
+          Skip to main content
         </a>
         <div id="main-content">
           {children}

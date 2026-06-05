@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, useMapEvents, useMap } from 'react-leaflet';
 import type { LatLngLiteral, LeafletMouseEvent } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import type { GeoCoordinate, MapClickPayload } from '@/types';
@@ -19,6 +19,26 @@ export interface MoonMapProps {
   initialCenter?: GeoCoordinate;
   initialZoom?: number;
   onMapClick?: (payload: MapClickPayload) => void;
+  flyTo?: GeoCoordinate | null;
+  children?: React.ReactNode;
+}
+
+/**
+ * Controller that flies the map to a given coordinate.
+ * Must be rendered inside MapContainer.
+ */
+function MapController({ flyTo }: { flyTo?: GeoCoordinate | null }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (flyTo) {
+      map.flyTo([flyTo.lat, flyTo.lng], Math.max(map.getZoom(), 10), {
+        duration: 1.5,
+      });
+    }
+  }, [flyTo, map]);
+
+  return null;
 }
 
 function MapClickHandler({
@@ -44,7 +64,6 @@ function MapClickHandler({
     },
     mousemove(event: LeafletMouseEvent) {
       if (!onHover) return;
-
       onHover({
         lat: event.latlng.lat,
         lng: event.latlng.lng,
@@ -95,6 +114,8 @@ export function MoonMap({
   initialCenter,
   initialZoom = DEFAULT_ZOOM,
   onMapClick,
+  flyTo,
+  children,
 }: MoonMapProps) {
   const [lastClick, setLastClick] = useState<GeoCoordinate | null>(null);
   const [hoverCoord, setHoverCoord] = useState<GeoCoordinate | null>(null);
@@ -150,6 +171,8 @@ export function MoonMap({
         <MapClickHandler onMapClick={handleMapClick} onHover={handleHover} />
         <GeolocationHandler onLocationFound={handleLocationFound} />
         <MapControls onResetView={handleResetView} />
+        <MapController flyTo={flyTo} />
+        {children}
       </MapContainer>
 
       <TooltipInfo coordinate={hoverCoord} isVisible={!!hoverCoord} position={mousePos} />

@@ -10,7 +10,7 @@ const mockPin: PinData = {
   color: '#22D3EE',
   moonData: {
     phase: 'full_moon',
-    phaseLabel: 'Bulan Purnama',
+    phaseLabel: 'Full Moon',
     illumination: 0.98,
     distance: 384400,
     azimuth: 180,
@@ -39,29 +39,24 @@ describe('ComparisonPanel', () => {
     jest.clearAllMocks();
   });
 
-  it('shows "Aktifkan" button when not in multi-pin mode', () => {
+  it('shows "Enable" button when not in multi-pin mode', () => {
     render(<ComparisonPanel {...defaultProps} />);
-    
-    const button = screen.getByRole('button', { name: /aktifkan/i });
-    expect(button).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^enable$/i })).toBeInTheDocument();
   });
 
   it('shows description text when not in multi-pin mode', () => {
     render(<ComparisonPanel {...defaultProps} />);
-    
-    expect(screen.getByText('Mode Multi-Pin')).toBeInTheDocument();
-    expect(screen.getByText(/Bandingkan data bulan dari beberapa lokasi/)).toBeInTheDocument();
+    expect(screen.getByText('Multi-Pin Mode')).toBeInTheDocument();
+    expect(screen.getByText(/Compare lunar data across multiple locations/)).toBeInTheDocument();
   });
 
-  it('calls onAddPin when Aktifkan button is clicked', async () => {
+  it('calls onAddPin when Enable button is clicked', async () => {
     const user = userEvent.setup();
     const onAddPin = jest.fn();
-    
+
     render(<ComparisonPanel {...defaultProps} onAddPin={onAddPin} />);
-    
-    const button = screen.getByRole('button', { name: /aktifkan/i });
-    await user.click(button);
-    
+    await user.click(screen.getByRole('button', { name: /^enable$/i }));
+
     expect(onAddPin).toHaveBeenCalledTimes(1);
   });
 
@@ -73,8 +68,8 @@ describe('ComparisonPanel', () => {
         pins={[mockPin]}
       />
     );
-    
-    expect(screen.getByText(/Perbandingan Pin/)).toBeInTheDocument();
+
+    expect(screen.getByText(/Pin Comparison/)).toBeInTheDocument();
     expect(screen.getByText('Jakarta')).toBeInTheDocument();
   });
 
@@ -86,8 +81,8 @@ describe('ComparisonPanel', () => {
         pins={[]}
       />
     );
-    
-    expect(screen.getByText(/Klik peta untuk menambahkan pin perbandingan/)).toBeInTheDocument();
+
+    expect(screen.getByText(/Click the map to add comparison pins/)).toBeInTheDocument();
   });
 
   it('shows pin count in header', () => {
@@ -98,11 +93,11 @@ describe('ComparisonPanel', () => {
         pins={[mockPin]}
       />
     );
-    
-    expect(screen.getByText(/Perbandingan Pin \(1\/5\)/)).toBeInTheDocument();
+
+    expect(screen.getByText(/Pin Comparison \(1\/5\)/)).toBeInTheDocument();
   });
 
-  it('shows Tambah button when under max pins', () => {
+  it('shows Add button when under max pins', () => {
     render(
       <ComparisonPanel
         {...defaultProps}
@@ -110,11 +105,11 @@ describe('ComparisonPanel', () => {
         pins={[mockPin]}
       />
     );
-    
-    expect(screen.getByRole('button', { name: /tambah/i })).toBeInTheDocument();
+
+    expect(screen.getByRole('button', { name: /add/i })).toBeInTheDocument();
   });
 
-  it('hides Tambah button when at max pins', () => {
+  it('hides Add button when at max pins', () => {
     render(
       <ComparisonPanel
         {...defaultProps}
@@ -123,11 +118,11 @@ describe('ComparisonPanel', () => {
         maxPins={1}
       />
     );
-    
-    expect(screen.queryByRole('button', { name: /tambah/i })).not.toBeInTheDocument();
+
+    expect(screen.queryByRole('button', { name: /add/i })).not.toBeInTheDocument();
   });
 
-  it('shows Hapus Semua button when pins exist', () => {
+  it('shows Clear All button when pins exist', () => {
     render(
       <ComparisonPanel
         {...defaultProps}
@@ -135,14 +130,14 @@ describe('ComparisonPanel', () => {
         pins={[mockPin]}
       />
     );
-    
-    expect(screen.getByRole('button', { name: /hapus semua/i })).toBeInTheDocument();
+
+    expect(screen.getByRole('button', { name: /clear all/i })).toBeInTheDocument();
   });
 
-  it('calls onClearAll when Hapus Semua is clicked', async () => {
+  it('calls onClearAll when Clear All is clicked', async () => {
     const user = userEvent.setup();
     const onClearAll = jest.fn();
-    
+
     render(
       <ComparisonPanel
         {...defaultProps}
@@ -151,8 +146,8 @@ describe('ComparisonPanel', () => {
         onClearAll={onClearAll}
       />
     );
-    
-    await user.click(screen.getByRole('button', { name: /hapus semua/i }));
+
+    await user.click(screen.getByRole('button', { name: /clear all/i }));
     expect(onClearAll).toHaveBeenCalledTimes(1);
   });
 });

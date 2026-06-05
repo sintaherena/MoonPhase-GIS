@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { useMap } from 'react-leaflet';
 import type { GeoCoordinate } from '@/types';
 
 interface SearchResult {
@@ -17,7 +16,6 @@ export interface SearchBarProps {
 }
 
 export function SearchBar({ onLocationSelect }: SearchBarProps) {
-  const map = useMap();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -59,14 +57,14 @@ export function SearchBar({ onLocationSelect }: SearchBarProps) {
       );
 
       if (!response.ok) {
-        throw new Error('Gagal mencari lokasi');
+        throw new Error('Failed to search location');
       }
 
       const data: SearchResult[] = await response.json();
       setResults(data);
       setIsOpen(data.length > 0);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Terjadi kesalahan');
+      setError(err instanceof Error ? err.message : 'An error occurred');
       setResults([]);
     } finally {
       setIsLoading(false);
@@ -98,12 +96,11 @@ export function SearchBar({ onLocationSelect }: SearchBarProps) {
       if (!isNaN(lat) && !isNaN(lng)) {
         const coordinate: GeoCoordinate = { lat, lng };
         onLocationSelect(coordinate);
-        map.flyTo([lat, lng], 10, { duration: 1.5 });
         setQuery(result.display_name.split(',')[0]);
         setIsOpen(false);
       }
     },
-    [onLocationSelect, map]
+    [onLocationSelect]
   );
 
   const handleClear = useCallback(() => {
@@ -150,7 +147,7 @@ export function SearchBar({ onLocationSelect }: SearchBarProps) {
           value={query}
           onChange={(e) => handleInputChange(e.target.value)}
           onFocus={() => results.length > 0 && setIsOpen(true)}
-          placeholder="Cari lokasi..."
+          placeholder="Search location..."
           className="w-48 bg-transparent text-sm text-moonlight placeholder-moonlight-muted focus:outline-none sm:w-64"
           role="combobox"
           aria-label="Cari lokasi di peta"
@@ -212,15 +209,13 @@ export function SearchBar({ onLocationSelect }: SearchBarProps) {
         <div
           id="search-results"
           role="listbox"
-          aria-label="Hasil pencarian lokasi"
           className="absolute left-0 right-0 mt-2 overflow-hidden rounded-lg border border-white/10 bg-space-surface/95 shadow-xl backdrop-blur-md"
         >
           {results.map((result) => (
             <button
               key={result.place_id}
-              onClick={() => handleSelect(result)}
               role="option"
-              aria-selected={false}
+              onClick={() => handleSelect(result)}
               className="flex w-full flex-col gap-0.5 border-b border-white/5 px-3 py-2 text-left transition-colors last:border-b-0 hover:bg-white/5"
             >
               <span className="text-sm text-moonlight">{getShortName(result.display_name)}</span>
@@ -233,7 +228,7 @@ export function SearchBar({ onLocationSelect }: SearchBarProps) {
       {/* Empty state */}
       {isOpen && results.length === 0 && !isLoading && query.length >= 3 && (
         <div className="mt-2 rounded-lg border border-white/10 bg-space-surface/95 px-3 py-4 text-center text-xs text-moonlight-muted backdrop-blur-md">
-          Tidak ada hasil ditemukan
+          No results found
         </div>
       )}
     </div>

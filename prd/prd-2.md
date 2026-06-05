@@ -1,65 +1,73 @@
-# Product Requirements Document (PRD) - MoonPhase GIS
+# Product Requirements Document (PRD) — MoonPhase GIS
 
-## 🗓️ Fase 2: Peta Interaktif & Koordinat
+## Phase 2: Interactive Map & Coordinates
 
-**Versi:** 1.0  
-**Status:** Fase 2 (Peta Interaktif & Koordinat)  
-**Durasi:** Minggu 2–4  
-**Peran Kunci:** Engineer & Designer  
-**Target Utama:** Mengimplementasikan peta interaktif *full-screen*, menangkap koordinat geografis dari interaksi pengguna, dan menyediakan *state management* berbasis URL serta kustomisasi *marker* fase bulan.
+**Version:** 1.0  
+**Status:** Phase 2 — Complete  
+**Duration:** Weeks 2–4  
+**Key Roles:** Engineer & Designer  
+**Primary Goal:** Implement a full-screen interactive map, capture geographic coordinates from user interaction, provide URL-based state management, and customize lunar phase markers.
 
 ---
 
-## 🛠️ Spesifikasi Teknis (Engineer)
+## Technical Specifications (Engineer)
 
 ### 1. Full-Screen Map Implementation
-*   Mengembangkan komponen peta interaktif yang memenuhi *viewport* layar (100vh/100vw).
-*   Integrasi *Tile Layer* manajemen menggunakan penyedia *dark-mode* gratis (seperti CartoDB DarkMatter) atau kustomisasi Mapbox Tiles untuk mempertahankan estetika *space-dark*.
 
-### 2. Koordinat Capture & Geolocation
-*   **Event Handler:** Mengimplementasikan fungsi `onClick` pada peta untuk menangkap data geografis presisi (*Latitude* dan *Longitude*).
-*   **Geolocation API:** Menambahkan fitur deteksi lokasi awal otomatis menggunakan izin GPS browser pengguna saat aplikasi pertama kali dibuka.
+- Interactive map filling the viewport (100vh/100vw)
+- Dark-mode tile layer (CartoDB Dark Matter) maintaining space-dark aesthetics
+
+### 2. Coordinate Capture & Geolocation
+
+- **Event Handler:** `onClick` on the map captures precise latitude and longitude
+- **Geolocation API:** Optional automatic location detection via browser GPS permission
 
 ### 3. State Management & URL Sync
-*   **URL Params Sync:** Setiap kali pengguna mengklik peta atau mengganti lokasi, koordinat terbaru harus disinkronisasikan ke URL browser (contoh: `/?lat=-6.59&lng=106.79`).
-*   **Deep Linking:** Memastikan bahwa jika URL tersebut disalin dan dibuka di tab baru, peta otomatis mengarah (*pan/zoom*) ke koordinat tersebut dan memicu kalkulasi data.
+
+- **URL Params Sync:** Coordinates sync to browser URL (`/?lat=-6.59&lng=106.79`)
+- **Deep Linking:** Opening a shared URL pans/zooms to coordinates and triggers calculations
 
 ### 4. Custom Architecture (`useMoonData`)
-*   Membuat *custom react hook* bernama `useMoonData(lat, lng, date)`. Hook ini bertugas menerima koordinat spasial dan parameter tanggal, lalu mengembalikan data iluminasi, jarak bulan, dan nama fase bulan saat ini.
+
+- Custom React hook `useMoonData(lat, lng, date)` returning illumination, distance, and phase name
 
 ---
 
-## 🎨 Spesifikasi Kreatif (Designer)
+## Creative Specifications (Designer)
 
 ### 1. High-Fidelity Dashboard Mockup
-*   Mentransformasikan wireframe low-fidelity Fase 1 menjadi desain visual beresolusi tinggi di Figma yang menggabungkan peta gelap dengan kontras visual panel data.
+
+Transform Phase 1 wireframes into high-resolution Figma designs combining dark map with contrasting data panel.
 
 ### 2. Custom Lunar Marker & Micro-Animations
-*   **Dynamic Marker:** Mendesain ikon *marker* peta unik yang berubah bentuk secara dinamis mengikuti fase bulan di titik koordinat tersebut (bukan pin peta standar).
-*   **Micro-Interactions:** Merancang animasi halus saat pengguna melakukan klik di peta (*click-to-place animation*) dan transisi saat *marker* muncul.
+
+- **Dynamic Marker:** Map icon changes shape based on moon phase at the coordinate
+- **Micro-Interactions:** Smooth click-to-place and marker appearance animations
 
 ### 3. Map Controls UX & Tooltips
-*   **Map Controls:** Merancang ulang tombol navigasi bawaan peta (*zoom-in*, *zoom-out*, *compass*, *reset view*) agar menyatu dengan tema minimalis.
-*   **Hover States:** Mendesain tampilan jendela informasi kecil (*tooltip*) yang muncul di dekat kursor saat menjelajahi peta sebelum melakukan klik.
+
+- **Map Controls:** Redesigned zoom, compass, and reset view buttons matching minimal theme
+- **Hover States:** Coordinate tooltip near cursor before clicking
 
 ---
 
-## 🎯 Kriteria Keberhasilan (Acceptance Criteria) Fase 2
-1.  **Seamless State Sync:** Perubahan URL params (`?lat=...&lng=...`) harus berjalan lancar tanpa memicu *hard-reload* pada halaman Next.js.
-2.  **Dynamic Icon Rendering:** *Marker* di atas peta harus berhasil berubah visualnya (misal: bentuk sabit, cembung, atau purnama) secara akurat sesuai data koordinat lokal yang diklik.
-3.  **Responsive Controls:** Kontrol navigasi peta harus mudah diakses dan fungsional baik pada perangkat layar sentuh (mobile) maupun desktop (mouse).
-4.  **Graceful Degradation:** Jika pengguna menolak izin Geolocation API, aplikasi harus beralih menggunakan koordinat *fallback* bawaan (default) tanpa merusak fungsionalitas peta.
+## Acceptance Criteria — Phase 2
+
+1. **Seamless State Sync:** URL param changes work without hard page reload
+2. **Dynamic Icon Rendering:** Markers visually reflect phase (crescent, gibbous, full moon)
+3. **Responsive Controls:** Map controls work on touch (mobile) and mouse (desktop)
+4. **Graceful Degradation:** Denied geolocation falls back to default coordinates without breaking the map
 
 ---
 
-## 📦 Komponen Baru yang Ditambahkan
+## New Components
+
 ```text
-src/
-├── components/
-│   └── Map/
-│       ├── CustomMarker.tsx       # Komponen marker fase bulan dinamis
-│       ├── MapControls.tsx        # UI tombol kontrol peta kustom
-│       └── TooltipInfo.tsx        # Hover tooltip koordinat
-├── hooks/
-│   ├── useMapSync.ts             # Hook untuk sinkronisasi URL params
-│   └── useMoonData.ts             # Core hook kalkulator astronomi lokal
+src/components/Map/
+├── CustomMarker.tsx
+├── MapControls.tsx
+└── TooltipInfo.tsx
+src/hooks/
+├── useMapSync.ts
+└── useMoonData.ts
+```

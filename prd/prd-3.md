@@ -1,67 +1,76 @@
-# Product Requirements Document (PRD) - MoonPhase GIS
+# Product Requirements Document (PRD) — MoonPhase GIS
 
-## 🗓️ Fase 3: Panel Lunar Data & Visualisasi
+## Phase 3: Lunar Data Panel & Visualization
 
-**Versi:** 1.0  
-**Status:** Fase 3 (Panel Lunar Data & Visualisasi)  
-**Durasi:** Minggu 4–6  
-**Peran Kunci:** Engineer & Designer  
-**Target Utama:** Membangun panel informasi (Sidebar), mengimplementasikan kalkulasi data astronomi di sisi klien, membuat animasi visualisasi bulan berbasis SVG/Canvas, serta mengintegrasikan penjelajahan waktu (*date picker*) dengan optimasi manajemen data (*caching*).
+**Version:** 1.0  
+**Status:** Phase 3 — Complete  
+**Duration:** Weeks 4–6  
+**Key Roles:** Engineer & Designer  
+**Primary Goal:** Build the information sidebar, implement client-side astronomical calculations, create SVG/Canvas moon visualizations, and integrate date navigation with data caching.
 
 ---
 
-## 🛠️ Spesifikasi Teknis (Engineer)
+## Technical Specifications (Engineer)
 
-### 1. Client-Side Astronomy Engine & API Integration
-*   **Local Calculation:** Mengintegrasikan pustaka matematika astronomi (seperti `SunCalc`) untuk melakukan kalkulasi posisi, sudut, dan fase bulan secara instan di sisi klien berdasarkan parameter koordinat dan waktu.
-*   **Fallback API:** Menyiapkan integrasi eksternal API Astronomy sebagai penyedia data sekunder untuk validasi tingkat akurasi akurasi data lokal.
+### 1. Client-Side Astronomy Engine
 
-### 2. Sidebar Panel Component & Time Travel
-*   **MoonInfo Component:** Membangun komponen penampung data di *sidebar* yang menampilkan persentase iluminasi, jarak bulan dalam kilometer, sudut azimuth/elevasi, serta estimasi waktu *moonrise* dan *moonset*.
-*   **Date Picker Integration:** Menambahkan kontrol kalender (*date picker*) yang memungkinkan pengguna melompat ke tanggal berapa pun di masa lalu atau masa depan guna memantau perubahan siklus bulan pada koordinat terpilih.
+- **Local Calculation:** SunCalc library for instant position, angle, and phase calculations
+- **Fallback API:** Optional external astronomy API for accuracy validation
+
+### 2. Sidebar Panel & Time Travel
+
+- **MoonInfo Component:** Illumination %, distance, azimuth/elevation, moonrise/moonset
+- **Date Picker:** Navigate to any past or future date to observe lunar cycle changes
 
 ### 3. Dynamic Visualizer & Performance
-*   **Real-Time Lunar Animation:** Memprogram mesin visualisasi bulan yang responsif menggunakan SVG dinamis atau HTML5 Canvas untuk merender bentuk bayangan bulan (dari *new moon* hingga *full moon*) secara mulus.
-*   **Resilience & Stability:** Menerapkan *Loading Skeleton* transparan untuk mencegah efek *layout shift* saat memproses kalkulasi, serta memasang *Error Boundary* terisolasi agar kegagalan render panel data tidak meruntuhkan komponen peta utama.
 
-### 4. Data Fetching & Caching Strategy
-*   **State Optimization:** Menggunakan React Query atau SWR untuk mengelola manajemen data dan melakukan *caching* otomatis pada hasil kalkulasi koordinat/tanggal yang sama guna menghemat konsumsi daya CPU.
+- **Real-Time Lunar Animation:** SVG or Canvas moon shadow rendering (new moon → full moon)
+- **Resilience:** Loading skeleton prevents layout shift; error boundary isolates sidebar failures from the map
+
+### 4. Data Fetching & Caching
+
+- Memoized calculations via `useMemo` in `useMoonData` to avoid redundant CPU usage
 
 ---
 
-## 🎨 Spesifikasi Kreatif (Designer)
+## Creative Specifications (Designer)
 
 ### 1. Infographic Sidebar Design
-*   Merancang tata letak *sidebar* data teknis yang bersih dengan pendekatan infografis premium. Mengatur hierarki visual agar informasi penting (seperti % Iluminasi dan Nama Fase) menjadi pusat perhatian utama (*Focal Point*).
+
+Clean technical sidebar with premium infographic layout. Illumination % and phase name as focal points.
 
 ### 2. Progress Arc & Timeline Visualizer
-*   **Illumination Arc:** Mendesain elemen pengukur berbentuk busur melingkar (*Progress Arc*) neon minimalis untuk merepresentasikan persentase cahaya bulan.
-*   **Sun/Moon Timeline:** Membuat visualisasi garis waktu (*timeline tracker*) linier yang menggambarkan pergerakan bulan terbit, titik kulminasi, hingga tenggelam secara intuitif.
+
+- **Illumination Arc:** Circular neon progress arc for illumination percentage
+- **Sun/Moon Timeline:** Linear timeline showing moonrise, transit, and moonset
 
 ### 3. Smooth Lunar Illustrations
-*   Membuat aset dan panduan keyframe animasi transisi perubahan bayangan bulan (*crescent* ➔ *gibbous* ➔ *full moon* ➔ *waning*) yang presisi secara matematis namun tetap estetis.
 
-### 4. Responsive Layout (Desktop-First with Tablet Support)
-*   Memastikan fleksibilitas *layout* dengan pendekatan *Desktop-First* (Sidebar kokoh di sisi kanan/kiri dengan lebar tetap), serta menyediakan adaptasi *Tablet/Mobile support* di mana panel dapat digeser ke bawah (*Bottom Sheet Panel*).
+Keyframe animation guide for shadow transitions (crescent → gibbous → full → waning).
 
----
+### 4. Responsive Layout
 
-## 🎯 Kriteria Keberhasilan (Acceptance Criteria) Fase 3
-1.  **Astronomical Accuracy:** Hasil kalkulasi fase dan waktu terbit/tenggelam bulan dari mesin lokal (`SunCalc`) harus memiliki deviasi minimal jika dicocokkan dengan data resmi.
-2.  **Fluid Animation:** Animasi visualisasi bayangan bulan pada SVG/Canvas harus bergeser secara halus tanpa ada patahan visual (*glitch*) saat pengguna menggeser atau mengubah tanggal.
-3.  **No Layout Shift:** Penggunaan *loading skeleton* harus mempertahankan struktur dimensi *sidebar* agar elemen UI di sekitarnya tidak melompat saat data selesai dimuat.
-4.  **Isolated Failures:** Jika terjadi kegagalan kalkulasi tanggal ekstrem pada *sidebar*, komponen peta interaktif di latar belakang harus tetap dapat digeser dan diklik secara normal.
+Desktop-first with floating right sidebar; tablet/mobile bottom-sheet adaptation.
 
 ---
 
-## 📦 Komponen Baru yang Ditambahkan
+## Acceptance Criteria — Phase 3
+
+1. **Astronomical Accuracy:** Local SunCalc results match official reference data within minimal deviation
+2. **Fluid Animation:** Moon shadow transitions smoothly without visual glitches on date change
+3. **No Layout Shift:** Loading skeleton maintains sidebar dimensions during data load
+4. **Isolated Failures:** Sidebar calculation errors do not break map interactivity
+
+---
+
+## New Components
+
 ```text
-src/
-├── components/
-│   ├── Sidebar/
-│   │   ├── MoonInfo.tsx          # Panel utama informasi data lunar
-│   │   ├── Visualizer.tsx        # Render komponen animasi SVG/Canvas bulan
-│   │   └── Timeline.tsx          # Garis waktu visualisasi moonrise/moonset
-│   └── UI/
-│       ├── SkeletonSidebar.tsx   # Loading placeholder untuk panel data
-│       └── DateSelector.tsx      # Komponen kontrol kalender/waktu
+src/components/Sidebar/
+├── MoonInfo.tsx
+├── Visualizer.tsx
+└── Timeline.tsx
+src/components/UI/
+├── SkeletonSidebar.tsx
+└── DateSelector.tsx
+```

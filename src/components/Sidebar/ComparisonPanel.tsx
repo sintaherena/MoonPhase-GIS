@@ -17,12 +17,15 @@ export interface ComparisonPanelProps {
 
 function formatTime(date: Date | null): string {
   if (!date) return '--:--';
-  return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+  return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 }
 
 function formatDistance(km: number): string {
+  if (km >= 1_000_000) {
+    return `${(km / 1_000_000).toFixed(2)}M km`;
+  }
   if (km >= 1000) {
-    return `${(km / 1000).toFixed(2)} juta km`;
+    return `${(km / 1000).toFixed(2)}k km`;
   }
   return `${km.toFixed(0)} km`;
 }
@@ -39,19 +42,19 @@ export const ComparisonPanel = memo(function ComparisonPanel({
 }: ComparisonPanelProps) {
   if (!isMultiPinMode) {
     return (
-      <div className="rounded-lg border border-white/10 bg-space-elevated/50 p-4" role="region" aria-label="Mode multi-pin">
+      <div className="rounded-lg border border-white/10 bg-space-elevated/50 p-4" role="region" aria-label="Multi-pin mode">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-sm font-medium text-moonlight">Mode Multi-Pin</h2>
+            <h2 className="text-sm font-medium text-moonlight">Multi-Pin Mode</h2>
             <p className="mt-1 text-xs text-moonlight-muted">
-              Bandingkan data bulan dari beberapa lokasi
+              Compare lunar data across multiple locations
             </p>
           </div>
           <button
             onClick={onAddPin}
             className="rounded-lg bg-cyber-cyan/20 px-3 py-1.5 text-xs font-medium text-cyber-cyan transition-colors hover:bg-cyber-cyan/30"
           >
-            Aktifkan
+            Enable
           </button>
         </div>
       </div>
@@ -59,10 +62,10 @@ export const ComparisonPanel = memo(function ComparisonPanel({
   }
 
   return (
-    <div className="rounded-lg border border-white/10 bg-space-elevated/50 p-4" role="region" aria-label="Perbandingan pin">
+    <div className="rounded-lg border border-white/10 bg-space-elevated/50 p-4" role="region" aria-label="Pin comparison">
       <div className="mb-3 flex items-center justify-between">
         <h2 className="text-sm font-medium text-moonlight">
-          Perbandingan Pin ({pins.length}/{maxPins})
+          Pin Comparison ({pins.length}/{maxPins})
         </h2>
         <div className="flex gap-2">
           {pins.length < maxPins && (
@@ -70,7 +73,7 @@ export const ComparisonPanel = memo(function ComparisonPanel({
               onClick={onAddPin}
               className="rounded-lg bg-cyber-cyan/20 px-2 py-1 text-xs font-medium text-cyber-cyan transition-colors hover:bg-cyber-cyan/30"
             >
-              + Tambah
+              + Add
             </button>
           )}
           {pins.length > 0 && (
@@ -78,7 +81,7 @@ export const ComparisonPanel = memo(function ComparisonPanel({
               onClick={onClearAll}
               className="rounded-lg bg-red-500/20 px-2 py-1 text-xs font-medium text-red-400 transition-colors hover:bg-red-500/30"
             >
-              Hapus Semua
+              Clear All
             </button>
           )}
         </div>
@@ -86,20 +89,18 @@ export const ComparisonPanel = memo(function ComparisonPanel({
 
       {pins.length === 0 ? (
         <div className="py-4 text-center text-xs text-moonlight-muted" role="status" aria-live="polite">
-          Klik peta untuk menambahkan pin perbandingan
+          Click the map to add comparison pins
         </div>
       ) : (
         <div className="space-y-2">
-          {/* Header */}
           <div className="grid grid-cols-5 gap-1 px-2 text-[10px] font-medium uppercase tracking-wider text-moonlight-muted">
-            <span>Lokasi</span>
-            <span>Fase</span>
-            <span>Cahaya</span>
-            <span>Terbit</span>
-            <span>Jarak</span>
+            <span>Location</span>
+            <span>Phase</span>
+            <span>Light</span>
+            <span>Rise</span>
+            <span>Distance</span>
           </div>
 
-          {/* Pin rows */}
           {pins.map((pin) => (
             <div
               key={pin.id}
@@ -110,7 +111,6 @@ export const ComparisonPanel = memo(function ComparisonPanel({
                   : 'hover:bg-white/5'
               }`}
             >
-              {/* Location label with color dot */}
               <div className="flex items-center gap-1.5">
                 <span
                   className="inline-block h-2.5 w-2.5 flex-shrink-0 rounded-full"
@@ -119,29 +119,24 @@ export const ComparisonPanel = memo(function ComparisonPanel({
                 <span className="truncate text-moonlight">{pin.label}</span>
               </div>
 
-              {/* Phase */}
               <span className="truncate text-moonlight-muted">
                 {pin.moonData ? getPhaseLabel(pin.moonData.phase) : '--'}
               </span>
 
-              {/* Illumination */}
               <span className="text-moonlight-muted">
                 {pin.moonData ? `${(pin.moonData.illumination * 100).toFixed(0)}%` : '--'}
               </span>
 
-              {/* Moonrise */}
               <span className="text-moonlight-muted">
                 {pin.moonData ? formatTime(pin.moonData.moonrise) : '--'}
               </span>
 
-              {/* Distance */}
               <span className="text-moonlight-muted">
                 {pin.moonData ? formatDistance(pin.moonData.distance) : '--'}
               </span>
             </div>
           ))}
 
-          {/* Remove buttons */}
           {pins.length > 0 && (
             <div className="mt-2 flex flex-wrap gap-1">
               {pins.map((pin) => (

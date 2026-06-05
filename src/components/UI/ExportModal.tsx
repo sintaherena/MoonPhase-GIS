@@ -101,7 +101,7 @@ export function ExportModal({
       <div className="relative mx-4 w-full max-w-md rounded-xl border border-white/10 bg-space-surface p-6 shadow-2xl backdrop-blur-md">
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-moonlight">Ekspor & Bagikan</h2>
+          <h2 className="text-lg font-semibold text-moonlight">Export & Share</h2>
           <button
             onClick={onClose}
             className="rounded-lg p-1 text-moonlight-muted transition-colors hover:bg-white/10 hover:text-moonlight"
@@ -190,9 +190,9 @@ export function ExportModal({
               </svg>
             </div>
             <div className="flex-1">
-              <p className="font-medium text-moonlight">Salin Tautan Berbagi</p>
+              <p className="font-medium text-moonlight">Copy Share Link</p>
               <p className="mt-0.5 text-xs text-moonlight-muted">
-                Bagikan state saat ini melalui URL
+                Share the current state via URL
               </p>
             </div>
             {copied && (
@@ -205,7 +205,7 @@ export function ExportModal({
 
         {/* Footer info */}
         <p className="mt-6 text-center text-xs text-moonlight-muted">
-          {pins.length} pin • {date.toLocaleDateString('id-ID')}
+          {pins.length} pin{pins.length !== 1 ? 's' : ''} • {date.toLocaleDateString('en-US')}
         </p>
       </div>
     </div>

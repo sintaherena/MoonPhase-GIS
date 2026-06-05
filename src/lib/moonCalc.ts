@@ -22,18 +22,18 @@ export function getMoonPhaseName(phaseValue: number): MoonPhaseName {
 }
 
 /**
- * Get the Indonesian label for a moon phase name.
+ * Get the English label for a moon phase name.
  */
 export function getPhaseLabel(name: MoonPhaseName): string {
   const labels: Record<MoonPhaseName, string> = {
-    new_moon: 'Bulan Baru',
-    waxing_crescent: 'Sabit Muda',
-    first_quarter: 'Kuartal Pertama',
-    waxing_gibbous: 'Bulan Sabit Penuh',
-    full_moon: 'Bulan Purnama',
-    waning_gibbous: 'Bulan Sabit Penuh',
-    last_quarter: 'Kuartal Terakhir',
-    waning_crescent: 'Sabit Muda',
+    new_moon: 'New Moon',
+    waxing_crescent: 'Waxing Crescent',
+    first_quarter: 'First Quarter',
+    waxing_gibbous: 'Waxing Gibbous',
+    full_moon: 'Full Moon',
+    waning_gibbous: 'Waning Gibbous',
+    last_quarter: 'Last Quarter',
+    waning_crescent: 'Waning Crescent',
   };
   return labels[name];
 }

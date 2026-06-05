@@ -1,6 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import { SearchBar as SearchBarComponent } from './SearchBar';
 import type { MoonMapProps } from './MoonMap';
 import type { CustomMarkerProps } from './CustomMarker';
 
@@ -30,11 +31,6 @@ const HeatmapLayerDynamic = dynamic(
   { ssr: false }
 );
 
-const SearchBarDynamic = dynamic(
-  () => import('./SearchBar').then((mod) => mod.SearchBar),
-  { ssr: false }
-);
-
 export function MoonMap(props: MoonMapProps) {
   return <MoonMapDynamic {...props} />;
 }
@@ -47,12 +43,11 @@ export function HeatmapLayer(props: React.ComponentProps<typeof import('./Heatma
   return <HeatmapLayerDynamic {...props} />;
 }
 
-export function SearchBar(props: React.ComponentProps<typeof import('./SearchBar').SearchBar>) {
-  return <SearchBarDynamic {...props} />;
+export function SearchBar(props: React.ComponentProps<typeof SearchBarComponent>) {
+  return <SearchBarComponent {...props} />;
 }
 
-// Re-export directly - no dynamic wrapper for components that use useMap()
-// They must be rendered inside MapContainer context
+// CustomMarker & HeatmapLayer use react-leaflet — must be inside MapContainer
 export { MapControls } from './MapControls';
 export { TooltipInfo } from './TooltipInfo';
 

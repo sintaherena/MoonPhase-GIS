@@ -60,15 +60,15 @@ describe('getMoonPhaseName', () => {
 });
 
 describe('getPhaseLabel', () => {
-  it('returns Indonesian labels for all phases', () => {
-    expect(getPhaseLabel('new_moon')).toBe('Bulan Baru');
-    expect(getPhaseLabel('waxing_crescent')).toBe('Sabit Muda');
-    expect(getPhaseLabel('first_quarter')).toBe('Kuartal Pertama');
-    expect(getPhaseLabel('waxing_gibbous')).toBe('Bulan Sabit Penuh');
-    expect(getPhaseLabel('full_moon')).toBe('Bulan Purnama');
-    expect(getPhaseLabel('waning_gibbous')).toBe('Bulan Sabit Penuh');
-    expect(getPhaseLabel('last_quarter')).toBe('Kuartal Terakhir');
-    expect(getPhaseLabel('waning_crescent')).toBe('Sabit Muda');
+  it('returns English labels for all phases', () => {
+    expect(getPhaseLabel('new_moon')).toBe('New Moon');
+    expect(getPhaseLabel('waxing_crescent')).toBe('Waxing Crescent');
+    expect(getPhaseLabel('first_quarter')).toBe('First Quarter');
+    expect(getPhaseLabel('waxing_gibbous')).toBe('Waxing Gibbous');
+    expect(getPhaseLabel('full_moon')).toBe('Full Moon');
+    expect(getPhaseLabel('waning_gibbous')).toBe('Waning Gibbous');
+    expect(getPhaseLabel('last_quarter')).toBe('Last Quarter');
+    expect(getPhaseLabel('waning_crescent')).toBe('Waning Crescent');
   });
 
   it('returns string for every valid phase name', () => {

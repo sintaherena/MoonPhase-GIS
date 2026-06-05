@@ -97,7 +97,7 @@ export function CustomMarker({ coordinate, phase, color, label }: CustomMarkerPr
     <Marker position={[coordinate.lat, coordinate.lng]} icon={icon}>
       <Popup>
         <div className="text-center">
-          <p className="font-bold text-gray-800">{label ?? 'Fase Bulan'}</p>
+          <p className="font-bold text-gray-800">{label ?? 'Moon Phase'}</p>
           <p className="text-sm text-gray-600">{phase.replace(/_/g, ' ').toUpperCase()}</p>
           {color && (
             <div className="mt-1 flex items-center justify-center gap-1">

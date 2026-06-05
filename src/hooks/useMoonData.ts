@@ -48,7 +48,7 @@ export function useMoonData(
       return getMoonData(coordinate, date);
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : 'Gagal menghitung data bulan';
+        err instanceof Error ? err.message : 'Failed to calculate moon data';
       setError(message);
       return null;
     }

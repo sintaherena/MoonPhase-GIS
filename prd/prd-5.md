@@ -1,61 +1,74 @@
-# Product Requirements Document (PRD) - MoonPhase GIS
+# Product Requirements Document (PRD) — MoonPhase GIS
 
-## 🗓️ Fase 5: QA, Performa & Deployment
+## Phase 5: QA, Performance & Deployment
 
-**Versi:** 1.0  
-**Status:** Fase 5 (QA, Performa & Deployment)  
-**Durasi:** Minggu 7–8  
-**Peran Kunci:** Engineer & Designer  
-**Target Utama:** Menjamin kualitas kode melalui pengujian sistematis, mengoptimalkan performa hingga mencapai standar tertinggi (Lighthouse 90+), memastikan aksesibilitas bagi semua pengguna, serta melakukan peluncuran (*deployment*) ke lingkungan produksi yang stabil.
+**Version:** 1.0  
+**Status:** Phase 5 — In Progress  
+**Duration:** Weeks 7–8  
+**Key Roles:** Engineer & Designer  
+**Primary Goal:** Systematic quality assurance, Lighthouse 90+ performance, accessibility compliance, and stable production deployment.
 
 ---
 
-## 🛠️ Spesifikasi Teknis (Engineer)
+## Technical Specifications (Engineer)
 
 ### 1. Automated Testing Suite
-* **Unit Testing:** Mengimplementasikan pengujian unit menggunakan Jest dan React Testing Library untuk komponen logika kritis, terutama pada modul `moon-calculator.ts` dan *custom hooks*.
-* **End-to-End (E2E) Testing:** Menyusun skenario pengujian alur utama (seperti: buka peta ➔ klik lokasi ➔ cek data sidebar ➔ ganti tanggal) menggunakan Playwright untuk memastikan integrasi antar komponen tidak pecah.
 
-### 2. Performance Engineering & Optimization
-* **Lighthouse Audit:** Melakukan audit berkala untuk memastikan skor minimal 90 pada kategori Performance, Accessibility, Best Practices, dan SEO.
-* **Code Splitting:** Mengoptimalkan *bundle size* dengan teknik *dynamic import* pada setiap rute dan komponen besar (terutama pustaka GIS dan Charting) guna mempercepat *First Contentful Paint* (FCP).
-* **Image Optimization:** Memastikan seluruh aset visual menggunakan format Next.js Image (`next/image`) dengan kompresi WebP/Avif.
+- **Unit Testing:** Jest + React Testing Library for `moonCalc`, hooks, and UI components
+- **End-to-End Testing:** Playwright scenarios for main user flows (open map → click location → check sidebar → change date)
+
+### 2. Performance Engineering
+
+- **Lighthouse Audit:** Target score ≥ 90 for Performance, Accessibility, Best Practices, and SEO
+- **Code Splitting:** Dynamic imports for GIS libraries to improve First Contentful Paint
+- **Image Optimization:** Next.js Image with WebP/Avif compression for visual assets
 
 ### 3. Production Deployment & Monitoring
-* **Vercel Deployment:** Konfigurasi *production-ready* pada platform Vercel, termasuk pengaturan *custom domain* dan sertifikat SSL.
-* **Error Tracking & Analytics:** Integrasi Sentry untuk menangkap error pada sisi klien secara real-time dan Vercel Analytics untuk memantau performa *Web Vitals* dari pengguna asli.
+
+- **Vercel Deployment:** Production-ready config with custom domain and SSL
+- **Error Tracking:** Sentry for real-time client error capture
+- **Analytics:** Vercel Analytics for Web Vitals monitoring
 
 ---
 
-## 🎨 Spesifikasi Kreatif (Designer)
+## Creative Specifications (Designer)
 
 ### 1. Design QA & Pixel Perfection
-* **Breakpoint Review:** Melakukan inspeksi visual mendalam pada seluruh *viewport* (Mobile, Tablet, Desktop, hingga Ultrawide) untuk memastikan konsistensi *padding, margin,* dan tata letak sesuai dengan desain High-Fidelity.
-* **Visual Consistency:** Memastikan transisi warna, ketajaman ikon, dan *smoothness* animasi sudah memenuhi standar *premium feel*.
+
+- **Breakpoint Review:** Visual inspection across Mobile, Tablet, Desktop, and Ultrawide
+- **Visual Consistency:** Color transitions, icon sharpness, and animation smoothness meet premium standards
 
 ### 2. Accessibility (a11y) & Usability
-* **WCAG 2.1 Compliance:** Audit kontras warna (minimal standar AA) dan memastikan seluruh elemen interaktif dapat diakses sepenuhnya melalui navigasi *keyboard* (Focus states).
-* **Usability Testing:** Menyelenggarakan 2–3 sesi uji pakai internal untuk mendapatkan masukan mengenai kemudahan navigasi peta dan pemahaman data astronomi oleh pengguna awam.
+
+- **WCAG 2.1 Compliance:** AA contrast minimum; full keyboard navigation with visible focus states
+- **Usability Testing:** 2–3 internal sessions for map navigation and data comprehension feedback
 
 ### 3. Launch Assets & Documentation
-* **Brand Assets:** Menyiapkan paket lengkap favicon (untuk berbagai perangkat) dan *OG Image* (Open Graph) yang dinamis untuk keperluan berbagi di media sosial.
-* **Handoff Final:** Menyelesaikan dokumentasi komponen di Figma sebagai panduan referensi jika ada pengembangan lebih lanjut di masa depan.
+
+- **Brand Assets:** Favicon set and OG image for social sharing
+- **Documentation:** Component library in Figma; technical docs in `docs/` folder
 
 ---
 
-## 🎯 Kriteria Keberhasilan (Acceptance Criteria) Fase 5
-1.  **High-Performance Score:** Aplikasi harus mencapai skor Lighthouse ≥ 90 secara konsisten pada lingkungan produksi.
-2.  **Zero Critical Bugs:** Tidak ada *bug* kategori kritis yang ditemukan pada alur utama pengujian E2E Playwright.
-3.  **Keyboard Navigable:** Pengguna harus bisa mengoperasikan pencarian lokasi dan penggantian tanggal hanya menggunakan tombol Tab dan Enter.
-4.  **Error-Free Launch:** Aplikasi berhasil dideploy dengan status SSL aktif dan sistem pemantauan (Sentry) terkonfigurasi dengan benar.
+## Acceptance Criteria — Phase 5
+
+1. **High-Performance Score:** Lighthouse ≥ 90 consistently in production
+2. **Zero Critical Bugs:** No critical bugs in Playwright E2E main flows
+3. **Keyboard Navigable:** Search and date controls operable via Tab and Enter
+4. **Error-Free Launch:** Deployed with active SSL and monitoring configured
 
 ---
 
-## 📦 Checklist Akhir Sebelum Launch
+## Pre-Launch Checklist
+
 ```text
-[ ] Unit tests passed (Jest)
-[ ] E2E flows verified (Playwright)
+[x] Unit tests passed (Jest)
+[x] E2E flows verified (Playwright)
 [ ] Lighthouse Audit 90+ across all metrics
 [ ] Sentry & Vercel Analytics integrated
-[ ] OG Images & Favicons generated
-[ ] Accessibility (WCAG 2.1 AA) verified
+[x] OG Images & Favicons generated
+[x] Accessibility (WCAG 2.1 AA) verified
+[x] English UI language
+[x] Documentation complete (README, docs/, PRDs)
+[x] Screenshots captured
+```

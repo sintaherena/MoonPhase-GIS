@@ -8,15 +8,11 @@ export interface MoonInfoProps {
 }
 
 /**
- * Format a Date to "HH:mm WIB" (Western Indonesian Time, UTC+7)
+ * Format a Date to "HH:mm" in the user's locale.
  */
-function formatTimeWIB(date: Date | null): string {
+function formatTime(date: Date | null): string {
   if (!date) return '--:--';
-
-  const wibTime = new Date(date.getTime() + 7 * 60 * 60 * 1000);
-  const hours = String(wibTime.getUTCHours()).padStart(2, '0');
-  const minutes = String(wibTime.getUTCMinutes()).padStart(2, '0');
-  return `${hours}:${minutes} WIB`;
+  return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 }
 
 /**
@@ -69,7 +65,7 @@ export const MoonInfo = memo(function MoonInfo({ data }: MoonInfoProps) {
     return (
       <div className="flex flex-col items-center justify-center py-8 text-center">
         <p className="text-sm text-moonlight-muted">
-          Klik pada peta untuk memilih koordinat observasi.
+          Click on the map to select an observation coordinate.
         </p>
       </div>
     );
@@ -86,7 +82,7 @@ export const MoonInfo = memo(function MoonInfo({ data }: MoonInfoProps) {
       <div className="flex items-center gap-4">
         <IlluminationArc value={data.illumination} />
         <div className="flex flex-col gap-1">
-          <span className="font-sans text-sm text-moonlight-muted">Penerangan</span>
+          <span className="font-sans text-sm text-moonlight-muted">Illumination</span>
           <span className="font-mono text-lg font-semibold text-cyber-cyan">
             {Math.round(data.illumination * 100)}%
           </span>
@@ -97,7 +93,7 @@ export const MoonInfo = memo(function MoonInfo({ data }: MoonInfoProps) {
       <dl className="space-y-3 border-t border-white/10 pt-4">
         {/* Distance */}
         <div className="flex items-center justify-between">
-          <dt className="font-sans text-sm text-moonlight-muted">Jarak</dt>
+          <dt className="font-sans text-sm text-moonlight-muted">Distance</dt>
           <dd className="font-mono text-sm font-medium text-cyber-cyan">
             {Math.round(data.distance).toLocaleString('id-ID')} km
           </dd>
@@ -105,7 +101,7 @@ export const MoonInfo = memo(function MoonInfo({ data }: MoonInfoProps) {
 
         {/* Azimuth */}
         <div className="flex items-center justify-between">
-          <dt className="font-sans text-sm text-moonlight-muted">Azimut</dt>
+          <dt className="font-sans text-sm text-moonlight-muted">Azimuth</dt>
           <dd className="font-mono text-sm font-medium text-cyber-cyan">
             {data.azimuth.toFixed(1)}°
           </dd>
@@ -113,7 +109,7 @@ export const MoonInfo = memo(function MoonInfo({ data }: MoonInfoProps) {
 
         {/* Elevation */}
         <div className="flex items-center justify-between">
-          <dt className="font-sans text-sm text-moonlight-muted">Elevasi</dt>
+          <dt className="font-sans text-sm text-moonlight-muted">Elevation</dt>
           <dd className="font-mono text-sm font-medium text-cyber-cyan">
             {data.elevation.toFixed(1)}°
           </dd>
@@ -121,25 +117,25 @@ export const MoonInfo = memo(function MoonInfo({ data }: MoonInfoProps) {
 
         {/* Age */}
         <div className="flex items-center justify-between">
-          <dt className="font-sans text-sm text-moonlight-muted">Usia</dt>
+          <dt className="font-sans text-sm text-moonlight-muted">Age</dt>
           <dd className="font-mono text-sm font-medium text-cyber-cyan">
-            {data.ageDays.toFixed(1)} hari
+            {data.ageDays.toFixed(1)} days
           </dd>
         </div>
 
         {/* Moonrise */}
         <div className="flex items-center justify-between">
-          <dt className="font-sans text-sm text-moonlight-muted">Terbit</dt>
+          <dt className="font-sans text-sm text-moonlight-muted">Moonrise</dt>
           <dd className="font-mono text-sm font-medium text-cyber-cyan">
-            {formatTimeWIB(data.moonrise)}
+            {formatTime(data.moonrise)}
           </dd>
         </div>
 
         {/* Moonset */}
         <div className="flex items-center justify-between">
-          <dt className="font-sans text-sm text-moonlight-muted">Terbenam</dt>
+          <dt className="font-sans text-sm text-moonlight-muted">Moonset</dt>
           <dd className="font-mono text-sm font-medium text-cyber-cyan">
-            {formatTimeWIB(data.moonset)}
+            {formatTime(data.moonset)}
           </dd>
         </div>
       </dl>

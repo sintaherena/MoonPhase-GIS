@@ -8,21 +8,15 @@ export interface DateSelectorProps {
 }
 
 /**
- * Format a date in Indonesian style: "Selasa, 5 Juni 2026"
+ * Format a date in English style: "Thursday, June 5, 2026"
  */
-function formatDateIndonesian(date: Date): string {
-  const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-  const months = [
-    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
-  ];
-
-  const dayName = days[date.getDay()];
-  const day = date.getDate();
-  const monthName = months[date.getMonth()];
-  const year = date.getFullYear();
-
-  return `${dayName}, ${day} ${monthName} ${year}`;
+function formatDateEnglish(date: Date): string {
+  return date.toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
 }
 
 /**
@@ -87,7 +81,7 @@ export function DateSelector({ date, onChange }: DateSelectorProps) {
         type="button"
         onClick={goToPreviousDay}
         className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-space-elevated text-moonlight-muted transition-colors hover:border-cyber-cyan/30 hover:text-cyber-cyan"
-        aria-label="Hari sebelumnya"
+        aria-label="Previous day"
       >
         <svg
           width="16"
@@ -129,7 +123,7 @@ export function DateSelector({ date, onChange }: DateSelectorProps) {
             strokeLinejoin="round"
           />
         </svg>
-        <span className="font-sans text-xs font-medium">{formatDateIndonesian(date)}</span>
+        <span className="font-sans text-xs font-medium">{formatDateEnglish(date)}</span>
       </button>
 
       {/* Next day button */}
@@ -137,7 +131,7 @@ export function DateSelector({ date, onChange }: DateSelectorProps) {
         type="button"
         onClick={goToNextDay}
         className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-space-elevated text-moonlight-muted transition-colors hover:border-cyber-cyan/30 hover:text-cyber-cyan"
-        aria-label="Hari berikutnya"
+        aria-label="Next day"
       >
         <svg
           width="16"
