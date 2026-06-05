@@ -141,8 +141,11 @@ function HomePageContent() {
 
   return (
     <main className="relative flex h-screen w-full overflow-hidden bg-space-deep">
+      {/* Visually hidden heading for accessibility */}
+      <h1 className="sr-only">MoonPhase GIS - Peta Fase Bulan</h1>
+
       {/* Map section */}
-      <section id="map-section" className="relative flex-1" aria-label="Peta interaktif">
+      <section id="map-section" className="relative flex-1" aria-label="Peta interaktif" role="application">
         <MoonMap
           className="absolute inset-0 h-full w-full"
           onMapClick={handleMapClick}
@@ -158,6 +161,8 @@ function HomePageContent() {
         <div className="absolute left-4 top-16 z-[1000]">
           <button
             onClick={() => setShowHeatmap(!showHeatmap)}
+            aria-pressed={showHeatmap}
+            aria-label={showHeatmap ? 'Nonaktifkan heatmap' : 'Aktifkan heatmap'}
             className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium transition-all ${
               showHeatmap
                 ? 'border-cyber-cyan/30 bg-cyber-cyan/20 text-cyber-cyan'
@@ -186,6 +191,7 @@ function HomePageContent() {
         <div className="absolute right-4 top-4 z-[1000]">
           <button
             onClick={() => setShowExportModal(true)}
+            aria-label="Ekspor data bulan"
             className="flex items-center gap-2 rounded-lg border border-white/10 bg-space-surface/95 px-3 py-2 text-xs font-medium text-moonlight-muted backdrop-blur-md transition-all hover:border-white/20 hover:text-moonlight"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -235,6 +241,7 @@ function HomePageContent() {
         id="sidebar-section"
         className="pointer-events-auto absolute right-0 top-0 z-10 flex h-full w-full max-w-md flex-col p-4 sm:p-6"
         aria-label="Panel data astronomi"
+        aria-live="polite"
       >
         <PanelShell title="Data Astronomi">
           <div className="panel-scroll flex flex-1 flex-col gap-4 overflow-y-auto">
@@ -255,7 +262,7 @@ function HomePageContent() {
 
             {/* Error display */}
             {error && (
-              <div className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs text-red-400">
+              <div className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs text-red-400" role="alert" aria-live="assertive">
                 {error}
               </div>
             )}

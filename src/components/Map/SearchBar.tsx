@@ -152,6 +152,11 @@ export function SearchBar({ onLocationSelect }: SearchBarProps) {
           onFocus={() => results.length > 0 && setIsOpen(true)}
           placeholder="Cari lokasi..."
           className="w-48 bg-transparent text-sm text-moonlight placeholder-moonlight-muted focus:outline-none sm:w-64"
+          role="combobox"
+          aria-label="Cari lokasi di peta"
+          aria-autocomplete="list"
+          aria-expanded={isOpen}
+          aria-controls={isOpen ? 'search-results' : undefined}
         />
 
         {/* Loading spinner */}
@@ -204,11 +209,18 @@ export function SearchBar({ onLocationSelect }: SearchBarProps) {
 
       {/* Results dropdown */}
       {isOpen && results.length > 0 && (
-        <div className="absolute left-0 right-0 mt-2 overflow-hidden rounded-lg border border-white/10 bg-space-surface/95 shadow-xl backdrop-blur-md">
+        <div
+          id="search-results"
+          role="listbox"
+          aria-label="Hasil pencarian lokasi"
+          className="absolute left-0 right-0 mt-2 overflow-hidden rounded-lg border border-white/10 bg-space-surface/95 shadow-xl backdrop-blur-md"
+        >
           {results.map((result) => (
             <button
               key={result.place_id}
               onClick={() => handleSelect(result)}
+              role="option"
+              aria-selected={false}
               className="flex w-full flex-col gap-0.5 border-b border-white/5 px-3 py-2 text-left transition-colors last:border-b-0 hover:bg-white/5"
             >
               <span className="text-sm text-moonlight">{getShortName(result.display_name)}</span>

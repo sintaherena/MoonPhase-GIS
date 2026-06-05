@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <radialGradient id="moonGradient" cx="40%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#F0F4FF"/>
+      <stop offset="50%" stop-color="#E8ECF4"/>
+      <stop offset="100%" stop-color="#C8D0E0"/>
+    </radialGradient>
+    <radialGradient id="shadowGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#0B0E14" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#12161F" stop-opacity="0.9"/>
+    </radialGradient>
+  </defs>
+  <!-- Moon base -->
+  <circle cx="50" cy="50" r="45" fill="url(#moonGradient)"/>
+  <!-- Shadow for crescent effect -->
+  <clipPath id="moonClip">
+    <circle cx="50" cy="50" r="45"/>
+  </clipPath>
+  <ellipse cx="65" cy="50" rx="35" ry="45" fill="url(#shadowGradient)" clip-path="url(#moonClip)"/>
+  <!-- Subtle rim light -->
+  <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(232, 236, 244, 0.3)" stroke-width="1"/>
+</svg>

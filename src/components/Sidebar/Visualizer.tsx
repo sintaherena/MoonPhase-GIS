@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import type { MoonPhaseName } from '@/types';
 
 export interface VisualizerProps {
@@ -28,7 +29,7 @@ function getPhaseAngle(phase: MoonPhaseName): number {
 /**
  * Visualizer - SVG moon visualization with dynamic shadow based on phase.
  */
-export function Visualizer({ phase, illumination, size = 180 }: VisualizerProps) {
+export const Visualizer = memo(function Visualizer({ phase, illumination, size = 180 }: VisualizerProps) {
   const center = size / 2;
   const radius = size / 2 - 4; // Small padding for glow
   const phaseAngle = getPhaseAngle(phase);
@@ -170,4 +171,5 @@ export function Visualizer({ phase, illumination, size = 180 }: VisualizerProps)
       </svg>
     </div>
   );
-}
+});
+Visualizer.displayName = 'Visualizer';

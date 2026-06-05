@@ -26,6 +26,32 @@ export const metadata: Metadata = {
   description:
     'Geospatial lunar phase explorer with interactive map and astronomical data panel',
   manifest: '/manifest.json',
+  icons: {
+    icon: '/favicon.svg',
+    apple: '/icon-192.png',
+  },
+  openGraph: {
+    title: 'MoonPhase GIS',
+    description:
+      'Explore lunar phases across the globe with real-time astronomical data',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'MoonPhase GIS - Geospatial Lunar Phase Explorer',
+      },
+    ],
+    type: 'website',
+    locale: 'id_ID',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'MoonPhase GIS',
+    description:
+      'Explore lunar phases across the globe with real-time astronomical data',
+    images: ['/og-image.png'],
+  },
 };
 
 function ServiceWorkerRegistration() {
@@ -61,7 +87,15 @@ export default function RootLayout({
       <head>
         <ServiceWorkerRegistration />
       </head>
-      <body className="min-h-screen font-sans antialiased">{children}</body>
+      <body className="min-h-screen font-sans antialiased">
+        {/* Skip to content link for keyboard navigation */}
+        <a href="#main-content" className="skip-to-content">
+          Lewati ke konten utama
+        </a>
+        <div id="main-content">
+          {children}
+        </div>
+      </body>
     </html>
   );
 }

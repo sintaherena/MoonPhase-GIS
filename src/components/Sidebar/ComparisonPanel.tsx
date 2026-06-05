@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import type { PinData } from '@/hooks/useMultiPin';
 import { getPhaseLabel } from '@/lib/moonCalc';
 
@@ -26,7 +27,7 @@ function formatDistance(km: number): string {
   return `${km.toFixed(0)} km`;
 }
 
-export function ComparisonPanel({
+export const ComparisonPanel = memo(function ComparisonPanel({
   pins,
   selectedPinId,
   onSelectPin,
@@ -38,10 +39,10 @@ export function ComparisonPanel({
 }: ComparisonPanelProps) {
   if (!isMultiPinMode) {
     return (
-      <div className="rounded-lg border border-white/10 bg-space-elevated/50 p-4">
+      <div className="rounded-lg border border-white/10 bg-space-elevated/50 p-4" role="region" aria-label="Mode multi-pin">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-sm font-medium text-moonlight">Mode Multi-Pin</h3>
+            <h2 className="text-sm font-medium text-moonlight">Mode Multi-Pin</h2>
             <p className="mt-1 text-xs text-moonlight-muted">
               Bandingkan data bulan dari beberapa lokasi
             </p>
@@ -58,11 +59,11 @@ export function ComparisonPanel({
   }
 
   return (
-    <div className="rounded-lg border border-white/10 bg-space-elevated/50 p-4">
+    <div className="rounded-lg border border-white/10 bg-space-elevated/50 p-4" role="region" aria-label="Perbandingan pin">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-sm font-medium text-moonlight">
+        <h2 className="text-sm font-medium text-moonlight">
           Perbandingan Pin ({pins.length}/{maxPins})
-        </h3>
+        </h2>
         <div className="flex gap-2">
           {pins.length < maxPins && (
             <button
@@ -84,7 +85,7 @@ export function ComparisonPanel({
       </div>
 
       {pins.length === 0 ? (
-        <div className="py-4 text-center text-xs text-moonlight-muted">
+        <div className="py-4 text-center text-xs text-moonlight-muted" role="status" aria-live="polite">
           Klik peta untuk menambahkan pin perbandingan
         </div>
       ) : (
@@ -166,4 +167,5 @@ export function ComparisonPanel({
       )}
     </div>
   );
-}
+});
+ComparisonPanel.displayName = 'ComparisonPanel';

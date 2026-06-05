@@ -1,5 +1,7 @@
 'use client';
 
+import { memo } from 'react';
+
 export interface TimelineProps {
   moonrise: Date | null;
   moonset: Date | null;
@@ -29,7 +31,7 @@ function dateToProgress(date: Date): number {
 /**
  * Timeline - Linear timeline showing moonrise, transit, and moonset.
  */
-export function Timeline({ moonrise, moonset, now }: TimelineProps) {
+export const Timeline = memo(function Timeline({ moonrise, moonset, now }: TimelineProps) {
   // Calculate current time progress
   const nowProgress = dateToProgress(now);
 
@@ -205,4 +207,5 @@ export function Timeline({ moonrise, moonset, now }: TimelineProps) {
       </div>
     </div>
   );
-}
+});
+Timeline.displayName = 'Timeline';
