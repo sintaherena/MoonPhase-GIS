@@ -25,12 +25,30 @@ const CustomMarkerDynamic = dynamic(
   { ssr: false }
 );
 
+const HeatmapLayerDynamic = dynamic(
+  () => import('./HeatmapLayer').then((mod) => mod.HeatmapLayer),
+  { ssr: false }
+);
+
+const SearchBarDynamic = dynamic(
+  () => import('./SearchBar').then((mod) => mod.SearchBar),
+  { ssr: false }
+);
+
 export function MoonMap(props: MoonMapProps) {
   return <MoonMapDynamic {...props} />;
 }
 
 export function CustomMarker(props: CustomMarkerProps) {
   return <CustomMarkerDynamic {...props} />;
+}
+
+export function HeatmapLayer(props: React.ComponentProps<typeof import('./HeatmapLayer').HeatmapLayer>) {
+  return <HeatmapLayerDynamic {...props} />;
+}
+
+export function SearchBar(props: React.ComponentProps<typeof import('./SearchBar').SearchBar>) {
+  return <SearchBarDynamic {...props} />;
 }
 
 // Re-export directly - no dynamic wrapper for components that use useMap()
@@ -40,3 +58,5 @@ export { TooltipInfo } from './TooltipInfo';
 
 export type { MoonMapProps } from './MoonMap';
 export type { CustomMarkerProps } from './CustomMarker';
+export type { HeatmapLayerProps } from './HeatmapLayer';
+export type { SearchBarProps } from './SearchBar';
