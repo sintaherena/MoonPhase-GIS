@@ -2,16 +2,44 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import type { GeoCoordinate } from '@/types';
+import { decodeState, type EncodedState } from '@/lib/stateCodec';
 
-export function useMapSync(defaultCoordinate?: GeoCoordinate) {
+export interface UseMapSyncResult {
+  coordinate: GeoCoordinate | null;
+  setCoordinate: (c: GeoCoordinate | null) => void;
+  hasURLParams: boolean;
+  sharedState: EncodedState | null;
+  clearSharedState: () => void;
+}
+
+export function useMapSync(defaultCoordinate?: GeoCoordinate): UseMapSyncResult {
   const [coord, setCoord] = useState<GeoCoordinate | null>(null);
   const [hasInitialized, setHasInitialized] = useState(false);
+  const [sharedState, setSharedState] = useState<EncodedState | null>(null);
 
   useEffect(() => {
     if (hasInitialized) return;
 
     // Check URL params on client side
     const params = new URLSearchParams(window.location.search);
+
+    // Check for encoded shared state
+    const stateParam = params.get('state');
+    if (stateParam) {
+      const decoded = decodeState(stateParam);
+      if (decoded) {
+        setSharedState(decoded);
+        // Use the first pin's coordinate or map center
+        if (decoded.pins.length > 0) {
+          setCoord(decoded.pins[0].coordinate);
+        } else {
+          setCoord(decoded.mapCenter);
+        }
+        setHasInitialized(true);
+        return;
+      }
+    }
+
     const latParam = params.get('lat');
     const lngParam = params.get('lng');
 
@@ -46,9 +74,15 @@ export function useMapSync(defaultCoordinate?: GeoCoordinate) {
     [updateURL]
   );
 
+  const clearSharedState = useCallback(() => {
+    setSharedState(null);
+  }, []);
+
   return {
     coordinate: coord,
     setCoordinate,
     hasURLParams: hasInitialized && coord !== null,
+    sharedState,
+    clearSharedState,
   };
 }
