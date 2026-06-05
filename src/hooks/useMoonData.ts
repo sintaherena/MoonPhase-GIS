@@ -1,97 +1,73 @@
 'use client';
 
-import { useMemo } from 'react';
-import type { GeoCoordinate, MoonPhaseData, MoonPhaseName } from '@/types';
+import { useMemo, useState, useEffect } from 'react';
+import type { GeoCoordinate, MoonDetailData } from '@/types';
+import { getMoonData } from '@/lib/moonCalc';
 
-/**
- * Calculate moon phase based on date using simplified algorithm
- * Based on the synodic month (29.53059 days)
- */
-function getMoonPhase(date: Date): { phase: MoonPhaseName; illumination: number; ageDays: number } {
-  // Known new moon reference: January 6, 2000 18:14 UTC
-  const knownNewMoon = new Date(2000, 0, 6, 18, 14, 0);
-  const synodicMonth = 29.53059;
-
-  const diffMs = date.getTime() - knownNewMoon.getTime();
-  const diffDays = diffMs / (1000 * 60 * 60 * 24);
-  const ageDays = ((diffDays % synodicMonth) + synodicMonth) % synodicMonth;
-
-  // Calculate illumination (0-1)
-  const illumination = (1 - Math.cos((2 * Math.PI * ageDays) / synodicMonth)) / 2;
-
-  // Determine phase name based on age
-  let phase: MoonPhaseName;
-  const dayThreshold = synodicMonth / 8;
-
-  if (ageDays < dayThreshold * 0.5) {
-    phase = 'new_moon';
-  } else if (ageDays < dayThreshold * 1.5) {
-    phase = 'waxing_crescent';
-  } else if (ageDays < dayThreshold * 2.5) {
-    phase = 'first_quarter';
-  } else if (ageDays < dayThreshold * 3.5) {
-    phase = 'waxing_gibbous';
-  } else if (ageDays < dayThreshold * 4.5) {
-    phase = 'full_moon';
-  } else if (ageDays < dayThreshold * 5.5) {
-    phase = 'waning_gibbous';
-  } else if (ageDays < dayThreshold * 6.5) {
-    phase = 'last_quarter';
-  } else if (ageDays < dayThreshold * 7.5) {
-    phase = 'waning_crescent';
-  } else {
-    phase = 'new_moon';
-  }
-
-  return { phase, illumination, ageDays };
+interface UseMoonDataResult {
+  moonData: MoonDetailData | null;
+  isLoading: boolean;
+  error: string | null;
 }
 
 /**
- * Calculate approximate moon distance based on orbital mechanics
- * Returns distance in km (varies between ~356,500 and ~406,700 km)
+ * Hook to calculate moon data for a given coordinate and date.
+ * Uses SunCalc3 for accurate astronomical calculations.
+ * Returns a loading state briefly to allow for skeleton UI transitions.
  */
-function getMoonDistance(date: Date): number {
-  const knownPerigee = new Date(2024, 0, 13); // Approximate perigee
-  const anomalisticMonth = 27.55455;
-  const diffMs = date.getTime() - knownPerigee.getTime();
-  const diffDays = diffMs / (1000 * 60 * 60 * 24);
-  const cycle = ((diffDays % anomalisticMonth) + anomalisticMonth) % anomalisticMonth;
+export function useMoonData(
+  coordinateOrOptions: GeoCoordinate | null | { coordinate: GeoCoordinate | null; date?: Date },
+  maybeDate?: Date
+): UseMoonDataResult {
+  // Support both (coordinate, date) and ({ coordinate, date }) calling conventions
+  const coordinate = useMemo(() => {
+    if (!coordinateOrOptions) return null;
+    if ('lat' in coordinateOrOptions) return coordinateOrOptions;
+    return coordinateOrOptions.coordinate;
+  }, [coordinateOrOptions]);
 
-  // Simple sinusoidal approximation
-  const minDistance = 356500;
-  const maxDistance = 406700;
-  const midDistance = (minDistance + maxDistance) / 2;
-  const amplitude = (maxDistance - minDistance) / 2;
+  const date = useMemo(() => {
+    if (maybeDate) return maybeDate;
+    if (coordinateOrOptions && 'date' in coordinateOrOptions && coordinateOrOptions.date) {
+      return coordinateOrOptions.date;
+    }
+    return new Date();
+  }, [maybeDate, coordinateOrOptions]);
 
-  return Math.round(midDistance - amplitude * Math.cos((2 * Math.PI * cycle) / anomalisticMonth));
-}
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-interface UseMoonDataOptions {
-  coordinate: GeoCoordinate | null;
-  date?: Date;
-}
+  // Memoize the moon data calculation
+  const moonData = useMemo(() => {
+    if (!coordinate) {
+      return null;
+    }
 
-export function useMoonData({ coordinate, date }: UseMoonDataOptions) {
-  const moonData = useMemo<MoonPhaseData | null>(() => {
-    if (!coordinate) return null;
-
-    const targetDate = date ?? new Date();
-    const { phase, illumination, ageDays } = getMoonPhase(targetDate);
-    const distance = getMoonDistance(targetDate);
-
-    return {
-      phase,
-      illumination: Math.round(illumination * 100) / 100,
-      ageDays: Math.round(ageDays * 100) / 100,
-      observedAt: targetDate.toISOString(),
-      coordinate,
-      distance,
-    } as MoonPhaseData & { distance: number };
+    try {
+      setError(null);
+      return getMoonData(coordinate, date);
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : 'Gagal menghitung data bulan';
+      setError(message);
+      return null;
+    }
   }, [coordinate, date]);
 
-  return {
-    moonData,
-    isLoading: false,
-    error: null,
-  };
+  // Simulate a brief loading state for skeleton transitions
+  useEffect(() => {
+    if (!coordinate) {
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [coordinate, date]);
+
+  return { moonData, isLoading, error };
 }
