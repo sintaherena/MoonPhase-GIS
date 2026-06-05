@@ -15,7 +15,8 @@
     "next": "^15.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-leaflet": "^5.0.0"
+    "react-leaflet": "^5.0.0",
+    "suncalc3": "^2.0.5"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.6.0",
