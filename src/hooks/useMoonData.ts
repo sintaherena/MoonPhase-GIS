@@ -5,24 +5,40 @@ import type { GeoCoordinate, MoonDetailData } from '@/types';
 import { getMoonData } from '@/lib/moonCalc';
 
 interface UseMoonDataResult {
-  data: MoonDetailData | null;
+  moonData: MoonDetailData | null;
   isLoading: boolean;
   error: string | null;
 }
 
 /**
  * Hook to calculate moon data for a given coordinate and date.
+ * Uses SunCalc3 for accurate astronomical calculations.
  * Returns a loading state briefly to allow for skeleton UI transitions.
  */
 export function useMoonData(
-  coordinate: GeoCoordinate | null,
-  date: Date
+  coordinateOrOptions: GeoCoordinate | null | { coordinate: GeoCoordinate | null; date?: Date },
+  maybeDate?: Date
 ): UseMoonDataResult {
+  // Support both (coordinate, date) and ({ coordinate, date }) calling conventions
+  const coordinate = useMemo(() => {
+    if (!coordinateOrOptions) return null;
+    if ('lat' in coordinateOrOptions) return coordinateOrOptions;
+    return coordinateOrOptions.coordinate;
+  }, [coordinateOrOptions]);
+
+  const date = useMemo(() => {
+    if (maybeDate) return maybeDate;
+    if (coordinateOrOptions && 'date' in coordinateOrOptions && coordinateOrOptions.date) {
+      return coordinateOrOptions.date;
+    }
+    return new Date();
+  }, [maybeDate, coordinateOrOptions]);
+
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // Memoize the moon data calculation
-  const data = useMemo(() => {
+  const moonData = useMemo(() => {
     if (!coordinate) {
       return null;
     }
@@ -53,5 +69,5 @@ export function useMoonData(
     return () => clearTimeout(timer);
   }, [coordinate, date]);
 
-  return { data, isLoading, error };
+  return { moonData, isLoading, error };
 }

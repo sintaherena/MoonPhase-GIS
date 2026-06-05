@@ -24,6 +24,7 @@ export interface MoonPhaseData {
   ageDays: number;
   observedAt: string;
   coordinate: GeoCoordinate;
+  distance?: number;
 }
 
 export interface MapClickPayload {

@@ -1,14 +1,14 @@
 'use client';
 
-import { useState, useCallback, Component, type ReactNode } from 'react';
-import { MoonMap } from '@/components/Map';
+import { useState, useCallback, Component, type ReactNode, Suspense } from 'react';
+import { MoonMap, CustomMarker } from '@/components/Map';
 import { PanelShell } from '@/components/UI/PanelShell';
 import { DateSelector } from '@/components/UI/DateSelector';
 import { SkeletonSidebar } from '@/components/UI/SkeletonSidebar';
 import { MoonInfo } from '@/components/Sidebar/MoonInfo';
 import { Visualizer } from '@/components/Sidebar/Visualizer';
 import { Timeline } from '@/components/Sidebar/Timeline';
-import { useGeoCoordinate } from '@/hooks/useGeoCoordinate';
+import { useMapSync } from '@/hooks/useMapSync';
 import { useMoonData } from '@/hooks/useMoonData';
 
 /**
@@ -51,11 +51,18 @@ class SidebarErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   }
 }
 
-export default function HomePage() {
-  const { coordinate, handleMapClick } = useGeoCoordinate();
+function HomePageContent() {
+  const { coordinate, setCoordinate } = useMapSync();
   const [selectedDate, setSelectedDate] = useState(() => new Date());
 
-  const { data: moonData, isLoading, error } = useMoonData(coordinate, selectedDate);
+  const { moonData, isLoading, error } = useMoonData(coordinate, selectedDate);
+
+  const handleMapClick = useCallback(
+    (payload: { coordinate: { lat: number; lng: number }; timestamp: string }) => {
+      setCoordinate(payload.coordinate);
+    },
+    [setCoordinate]
+  );
 
   const handleDateChange = useCallback((date: Date) => {
     setSelectedDate(date);
@@ -65,7 +72,17 @@ export default function HomePage() {
     <main className="relative flex h-screen w-full overflow-hidden bg-space-deep">
       {/* Map section */}
       <section className="relative flex-1" aria-label="Peta interaktif">
-        <MoonMap className="absolute inset-0 h-full w-full" onMapClick={handleMapClick} />
+        <MoonMap
+          className="absolute inset-0 h-full w-full"
+          onMapClick={handleMapClick}
+          initialCenter={coordinate ?? undefined}
+        />
+
+        {coordinate && moonData && (
+          <div className="absolute left-1/2 top-4 z-[1000] -translate-x-1/2">
+            <CustomMarker coordinate={coordinate} phase={moonData.phase} />
+          </div>
+        )}
       </section>
 
       {/* Sidebar panel */}
@@ -118,5 +135,19 @@ export default function HomePage() {
         </PanelShell>
       </section>
     </main>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex h-screen w-full items-center justify-center bg-space-deep">
+          <span className="font-mono text-moonlight-muted">Loading...</span>
+        </div>
+      }
+    >
+      <HomePageContent />
+    </Suspense>
   );
 }
