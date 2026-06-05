@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import type { MoonDetailData } from '@/types';
 
 export interface MoonInfoProps {
@@ -63,7 +64,7 @@ function IlluminationArc({ value }: { value: number }) {
 /**
  * MoonInfo - Main info panel showing moon phase data.
  */
-export function MoonInfo({ data }: MoonInfoProps) {
+export const MoonInfo = memo(function MoonInfo({ data }: MoonInfoProps) {
   if (!data) {
     return (
       <div className="flex flex-col items-center justify-center py-8 text-center">
@@ -158,4 +159,5 @@ export function MoonInfo({ data }: MoonInfoProps) {
       </div>
     </div>
   );
-}
+});
+MoonInfo.displayName = 'MoonInfo';
